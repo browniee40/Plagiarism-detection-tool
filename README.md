@@ -1,5 +1,20 @@
 # Plagiarism Detection Tool (Python Web Project)
 
+# Plagiarism Detection Tool
+
+## 🚀 Live Demo
+
+[Click Here to Use the Plagiarism Detection Tool](https://plagiarism-detection-tool-qusy.onrender.com)
+
+## Technologies Used
+- Python
+- Flask
+- HTML
+- CSS
+- Rabin-Karp Algorithm
+- Rolling Hashing
+
+
 ## 1. Project overview
 A web-based text comparison application built with Python and Flask. It compares two text documents, detects matching consecutive word sequences, highlights matching words, and reports a similarity score.
 
