@@ -1,0 +1,1 @@
+Machine learning helps computers identify patterns in data and make useful predictions. Students can use programming to solve practical problems. Data science combines statistics and computing.

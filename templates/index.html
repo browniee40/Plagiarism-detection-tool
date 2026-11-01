@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plagiarism Detection Tool</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-icon">✦</span> TextCheck</div>
+    <span class="tag">ACADEMIC TEXT COMPARISON</span>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="eyebrow">SMART DOCUMENT ANALYSIS</div>
+      <h1>Plagiarism <span>Detection Tool</span></h1>
+      <p>Compare two documents, discover matching passages, and understand their text overlap.</p>
+    </section>
+
+    <form method="POST" enctype="multipart/form-data" class="compare-form">
+      <div class="document-grid">
+        <section class="panel">
+          <div class="panel-heading">
+            <div><span class="step">01</span><h2>Original document</h2></div>
+            <span class="file-label">DOCUMENT A</span>
+          </div>
+          <label for="doc1_text">Paste your original text</label>
+          <textarea id="doc1_text" name="doc1_text" placeholder="Paste the first document here...">{{ doc1_text }}</textarea>
+          <div class="or-line"><span>OR UPLOAD A TEXT FILE</span></div>
+          <input type="file" name="doc1_file" accept=".txt">
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div><span class="step">02</span><h2>Document to check</h2></div>
+            <span class="file-label">DOCUMENT B</span>
+          </div>
+          <label for="doc2_text">Paste the second text</label>
+          <textarea id="doc2_text" name="doc2_text" placeholder="Paste the second document here...">{{ doc2_text }}</textarea>
+          <div class="or-line"><span>OR UPLOAD A TEXT FILE</span></div>
+          <input type="file" name="doc2_file" accept=".txt">
+        </section>
+      </div>
+
+      <section class="settings panel">
+        <div>
+          <h2>Matching sensitivity</h2>
+          <p>Minimum consecutive words required to identify a matching passage.</p>
+        </div>
+        <label class="select-label" for="shingle_size">Word window
+          <select id="shingle_size" name="shingle_size">
+            {% for n in range(1, 11) %}
+              <option value="{{ n }}" {% if shingle_size == n %}selected{% endif %}>{{ n }} word{% if n != 1 %}s{% endif %}</option>
+            {% endfor %}
+          </select>
+        </label>
+      </section>
+
+      <button class="analyze-button" type="submit">Analyze documents <span>→</span></button>
+      <p class="privacy-note">Your text is processed by this local application and is not sent to an external plagiarism database.</p>
+    </form>
+
+    {% if error %}
+      <div class="alert">⚠ {{ error }}</div>
+    {% endif %}
+
+    {% if result %}
+      <section class="results" id="results">
+        <div class="results-title">
+          <div><div class="eyebrow">ANALYSIS COMPLETE</div><h2>Comparison report</h2></div>
+          <span class="status {{ result.status_class }}">{{ result.status }}</span>
+        </div>
+
+        <div class="score-card">
+          <div class="score-number">{{ result.similarity }}<small>%</small></div>
+          <div class="score-copy">
+            <h3>Overall text similarity</h3>
+            <p>Matching token positions divided by the larger document's word count.</p>
+            <div class="meter"><span style="width: {{ result.similarity }}%"></span></div>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat"><span>Matching words in A</span><strong>{{ result.matched_a }} <small>/ {{ result.total_a }}</small></strong><em>{{ result.coverage_a }}% coverage</em></div>
+          <div class="stat"><span>Matching words in B</span><strong>{{ result.matched_b }} <small>/ {{ result.total_b }}</small></strong><em>{{ result.coverage_b }}% coverage</em></div>
+          <div class="stat"><span>Matching passages</span><strong>{{ result.segments|length }}</strong><em>{{ result.window }}-word minimum window</em></div>
+        </div>
+
+        <section class="panel match-panel">
+          <div class="section-heading"><div><div class="eyebrow">FOUND IN BOTH DOCUMENTS</div><h3>Matching passages</h3></div></div>
+          {% if result.segments %}
+            {% for segment in result.segments %}
+              <div class="match-item"><span class="match-index">MATCH {{ loop.index }}</span><p>{{ segment.text }}</p><small>{{ segment.length }} matching words</small></div>
+            {% endfor %}
+          {% else %}
+            <p class="empty">No matching passage of {{ result.window }} or more consecutive words was found.</p>
+          {% endif %}
+        </section>
+
+        <div class="highlight-grid">
+          <section class="panel">
+            <div class="section-heading"><h3>Document A</h3><span class="file-label">HIGHLIGHTED VIEW</span></div>
+            <div class="document-view">{% for item in result.highlight_a %}{% if item.matched %}<mark>{{ item.word }}</mark>{% else %}{{ item.word }}{% endif %} {% endfor %}</div>
+          </section>
+          <section class="panel">
+            <div class="section-heading"><h3>Document B</h3><span class="file-label">HIGHLIGHTED VIEW</span></div>
+            <div class="document-view">{% for item in result.highlight_b %}{% if item.matched %}<mark>{{ item.word }}</mark>{% else %}{{ item.word }}{% endif %} {% endfor %}</div>
+          </section>
+        </div>
+        <p class="disclaimer">Important: This tool identifies textual overlap, not intent or proven plagiarism. Common phrases, quotations, references, and properly cited material may also match. Review the highlighted passages manually.</p>
+        <button class="print-button" type="button" onclick="window.print()">Print / Save report</button>
+      </section>
+    {% endif %}
+  </main>
+  <footer>TextCheck · Python, Flask, Rabin-Karp hashing and string matching</footer>
+</body>
+</html>

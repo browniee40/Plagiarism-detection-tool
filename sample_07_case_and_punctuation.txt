@@ -1,0 +1,1 @@
+DATA STRUCTURES help organize information efficiently. Arrays store elements in sequence, while linked lists connect nodes using references. Algorithms operate on these structures.

@@ -1,0 +1,1 @@
+Machine learning helps computers learn from data. Java is another programming language used in software development.
